@@ -37,5 +37,37 @@ router.get("/:id", (req, res) => {
 });
 
 //POST requests
+router.post("/", (req, res) => {
+    const body = req.body;
+    db("cars")
+    .insert(body)
+    .then(newId => {
+        db("cars")
+        .where({ id: newId[0] })
+        .then(data => {
+            res.status(201).json(data)
+        })
+        .catch(error => {
+            console.log(error)
+            res.status(500).json({ errorMessage: "Error adding new car."})
+        })
+    })
+});
+
+//PUT requests
+router.put("/:id", (req, res) => {
+    const updateId = req.params.id;
+    const body = req.body;
+    db("cars")
+    .where({ id: updateId })
+    .update(body)
+    .then(data => {
+        res.status(201).json({message: "Car successfully updated", data})
+    })
+    .catch(error => {
+        console.log(error)
+        res.status(500).json({errorMessage: "Error updating car."})
+    })
+});
 
 module.exports = router;
